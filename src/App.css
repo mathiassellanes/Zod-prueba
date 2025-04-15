@@ -1,0 +1,24 @@
+.app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+}
+
+.app__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 50%;
+  max-width: 500px;
+}
+
+.app__submit {
+  background-color: #007aff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  width: 100%;
+}
