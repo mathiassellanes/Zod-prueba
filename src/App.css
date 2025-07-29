@@ -21,4 +21,8 @@
   border-radius: 0.5rem;
   cursor: pointer;
   width: 100%;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }

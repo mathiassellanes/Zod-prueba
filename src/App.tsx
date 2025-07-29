@@ -1,76 +1,40 @@
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
-import { getUser } from "./api";
 import Input from "./components/Input/Input";
 
 import "./App.css";
 
-const fieldRefined = z.string().refine(
-  (str) => {
-    if (str.length > 0) {
-      return str.length >= 3;
-    }
-
-    return true;
-  },
-  {
-    message: "This field must be at least 3 characters long",
-  }
-);
-
 const userSchema = z.object({
-  firstName: fieldRefined,
-  lastName: fieldRefined,
-  email: z
-    .string()
-    .email("Invalid email")
-    .refine(
-      async (value) => {
-        try {
-          const data = await getUser(value);
-
-          console.log(data);
-        } catch (error) {
-          if (error.response.data.error === "Email is already in use") {
-            return false;
-          }
-
-          return true;
-        }
-
-        return true;
-      },
-      {
-        message: "Email already taken",
-      }
-    ),
+  firstName: z.string().min(3, "This field must be at least 3 characters long"),
+  lastName: z.string().min(3, "This field must be at least 3 characters long"),
+  age: z.preprocess(
+    (val) => Number(val) || 0,
+    z.number()
+      .min(18, "You must be at least 18 years old")
+      .max(100, "You must be less than 100 years old")
+  ) as z.ZodType<number, number>,
+  email: z.email("Invalid email"),
 });
 
 type User = z.infer<typeof userSchema>;
 
+const defaultValues: User = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  age: 0,
+};
+
 const App = () => {
   const form = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-    } as User,
+    defaultValues,
     onSubmit: async ({ value }) => {
-      // Do something with form data
-      console.log(value);
+      alert(JSON.stringify(value));
     },
     validators: {
-      onChangeAsync: userSchema,
-      onChangeAsyncDebounceMs: 300,
-    },
-  });
-
-  form.update({
-    defaultValues: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
+      onMount: userSchema,
+      onChange: userSchema,
     },
   });
 
@@ -92,6 +56,12 @@ const App = () => {
         <form.Field
           name="lastName"
           children={(field) => <Input label="Last Name" field={field} />}
+        />
+        <form.Field
+          name="age"
+          children={(field) => (
+            <Input type="number" label="Age" field={field} />
+          )}
         />
         <form.Field
           name="email"

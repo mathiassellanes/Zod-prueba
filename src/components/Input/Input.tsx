@@ -1,8 +1,8 @@
-import type { FieldApi } from "@tanstack/react-form";
+import type { AnyFieldApi } from "@tanstack/react-form";
 
 import "./Input.css";
 
-function FieldInfo({ field }: { field: FieldApi<any> }) {
+function FieldInfo({ field }: { field: AnyFieldApi }) {
   return (
     <>
       {field.state.meta.isTouched && field.state.meta.errors.length ? (
@@ -13,17 +13,21 @@ function FieldInfo({ field }: { field: FieldApi<any> }) {
   );
 }
 
-const Input = ({ field, label }: { field: FieldApi, label: string }) => {
+const Input = ({ field, label, type = "text" }: { field: AnyFieldApi, label: string, type?: string }) => {
   return (
     <div className="field">
       <label htmlFor={field.name}>{label}:</label>
       <input
         className="field__input"
         id={field.name}
+        autoComplete="off"
         name={field.name}
+        type={type}
         value={field.state.value}
+        onChange={(e) => {
+          field.handleChange(e.target.value);
+        }}
         onBlur={field.handleBlur}
-        onChange={(e) => field.handleChange(e.target.value)}
       />
       <FieldInfo field={field} />
     </div>
